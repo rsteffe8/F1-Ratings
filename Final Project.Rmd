@@ -1,0 +1,907 @@
+---
+title: "F1 Final Project"
+author: "Ryan Steffe"
+date: "2024-10-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Packages
+```{r}
+##Loading in the necessary packages
+library(dplyr)
+library(tidyr)
+library(tidyverse)
+library(ggplot2)
+library(stringr)
+library(rvest)
+library(httr)
+library(lubridate)
+library(plyr)
+library(jsonlite)
+library(f1dataR)
+library(reticulate)
+library(data.table)
+library(ggrepel)
+library(cluster) # Load cluster
+library(factoextra) # clustering algorithms & visualization
+library(sparcl) # Sparse Clustering
+source("C:/Notre Dame/Fall Semester/Sports Analytics/Code/elo_funcs.R") # Load Elo Functions
+```
+
+
+```{r}
+#Creating dataset
+#t1 <- load_session_laps(season = "current", round = 1, session = "R", add_weather = TRUE)
+
+#temp <- vector(mode = "list", length = 21)
+
+#for(i in 1:21){
+#  t1 <- load_session_laps(season = "current", round = i, session = "R", add_weather = TRUE)
+#  t1$round <- i
+#  temp[[i]] <- t1
+#}
+
+#res <- rbindlist(temp)
+
+#Saving data
+#save(res, file = "res_2024.rda")
+
+#Dataset
+load("res_2024.rda")
+load("results_2024.rda")
+```
+
+
+##Formula 1 - 2024 Race Results
+```{r}
+#2024 Race results
+#round1_result <- load_results(season = 2024, round = 1)
+#  round1_result$fastest_rank <- as.numeric(round1_result$fastest_rank)
+#  round1_result$round <- 1 #Adding a new column for the round
+  
+#round2_result <- load_results(season = 2024, round = 2)
+#  round2_result$fastest_rank <- as.numeric(round2_result$fastest_rank)
+#  round2_result$round <- 2 #Adding a new column for the round
+  
+#round3_result <- load_results(season = 2024, round = 3)
+#  round3_result$fastest_rank <- as.numeric(round3_result$fastest_rank)
+#  round3_result$round <- 3 #Adding a new column for the round
+  
+#round4_result <- load_results(season = 2024, round = 4)
+#  round4_result$fastest_rank <- as.numeric(round4_result$fastest_rank)
+#  round4_result$round <- 4 #Adding a new column for the round
+  
+#round5_result <- load_results(season = 2024, round = 5)
+#  round5_result$fastest_rank <- as.numeric(round5_result$fastest_rank)
+#  round5_result$round <- 5 #Adding a new column for the round
+  
+#round6_result <- load_results(season = 2024, round = 6)
+#  round6_result$fastest_rank <- as.numeric(round6_result$fastest_rank)
+#  round6_result$round <- 6 #Adding a new column for the round
+  
+#round7_result <- load_results(season = 2024, round = 7)
+#  round7_result$fastest_rank <- as.numeric(round7_result$fastest_rank)
+#  round7_result$round <- 7 #Adding a new column for the round
+  
+#round8_result <- load_results(season = 2024, round = 8)
+#  round8_result$fastest_rank <- as.numeric(round8_result$fastest_rank)
+#  round8_result$round <- 8 #Adding a new column for the round
+  
+#round9_result <- load_results(season = 2024, round = 9)
+#  round9_result$fastest_rank <- as.numeric(round9_result$fastest_rank)
+#  round9_result$round <- 9 #Adding a new column for the round
+  
+#round10_result <- load_results(season = 2024, round = 10)
+#  round10_result$fastest_rank <- as.numeric(round10_result$fastest_rank)
+#  round10_result$round <- 10 #Adding a new column for the round
+  
+#round11_result <- load_results(season = 2024, round = 11)
+#  round11_result$fastest_rank <- as.numeric(round11_result$fastest_rank)
+#  round11_result$round <- 11 #Adding a new column for the round
+  
+#round12_result <- load_results(season = 2024, round = 12)
+#  round12_result$fastest_rank <- as.numeric(round12_result$fastest_rank)
+#  round12_result$round <- 12 #Adding a new column for the round
+  
+#round13_result <- load_results(season = 2024, round = 13)
+#  round13_result$fastest_rank <- as.numeric(round13_result$fastest_rank)
+#  round13_result$round <- 13 #Adding a new column for the round
+  
+#round14_result <- load_results(season = 2024, round = 14)
+#  round14_result$fastest_rank <- as.numeric(round14_result$fastest_rank)
+#  round14_result$round <- 14 #Adding a new column for the round
+  
+#round15_result <- load_results(season = 2024, round = 15)
+#  round15_result$fastest_rank <- as.numeric(round15_result$fastest_rank)
+#  round15_result$round <- 15 #Adding a new column for the round
+  
+#round16_result <- load_results(season = 2024, round = 16)
+#  round16_result$fastest_rank <- as.numeric(round16_result$fastest_rank)
+#  round16_result$round <- 16 #Adding a new column for the round
+  
+#round17_result <- load_results(season = 2024, round = 17)
+#  round17_result$fastest_rank <- as.numeric(round17_result$fastest_rank)
+#  round17_result$round <- 17 #Adding a new column for the round
+  
+#round18_result <- load_results(season = 2024, round = 18)
+#  round18_result$fastest_rank <- as.numeric(round18_result$fastest_rank)
+#  round18_result$round <- 18 #Adding a new column for the round
+  
+#round19_result <- load_results(season = 2024, round = 19)
+#  round19_result$fastest_rank <- as.numeric(round19_result$fastest_rank)
+#  round19_result$round <- 19 #Adding a new column for the round
+  
+#round20_result <- load_results(season = 2024, round = 20)
+#  round20_result$fastest_rank <- as.numeric(round20_result$fastest_rank)
+#  round20_result$round <- 20 #Adding a new column for the round
+
+#round21_result <- load_results(season = 2024, round = 21)
+#  round21_result$fastest_rank <- as.numeric(round21_result$fastest_rank)
+#  round21_result$round <- 21 #Adding a new column for the round
+
+#results_2024 <- bind_rows(round1_result, round2_result, round3_result, round4_result, round5_result, round6_result, round7_result, round8_result, round9_result, round10_result, round11_result, round12_result, round13_result, round14_result, round15_result, round16_result, round17_result, round18_result, round19_result, round20_result, round21_result)
+
+#save(results_2024,file = "results_2024.rda")
+#load("results_2024.rda")
+
+#Dropping last column
+#results_2024 <- results_2024 %>%
+#  select(-top_speed_kpt)
+
+#Visualizing certain drivers results throughout the season
+results_2024$position <- as.numeric(results_2024$position) #Changing position to numeric
+
+###Red Bull
+resultsrb_2024 <- results_2024 %>%
+  filter(constructor_id == "red_bull") #Filtering for the constructor Red Bull
+
+resultsrb_2024plot <- ggplot(resultsrb_2024, aes(x = round, y = position, colour = driver_id)) +
+   geom_line() + #Plotting finishing results for Red Bull
+   theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white"))+
+   labs(x = "Round", y = "Finishing Position", title = "2024 Red Bull Race Results")
+resultsrb_2024plot
+
+#saving plot
+ggsave(resultsrb_2024plot,
+       file = "C:/Notre Dame/Fall Semester/Sports Analytics/Assignment1/resultsrb_2024plot.jpeg",
+       dpi = 600)
+
+###Ferrari
+resultsferrari_2024 <- results_2024 %>%
+  filter(constructor_id == "ferrari") #Filtering for the constructor Ferrari
+
+resultsferrari_2024plot <- ggplot(resultsferrari_2024, aes(x = round, y = position, colour = driver_id)) +
+   geom_line() + #Plotting finishing results for Ferrari
+   theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white"))+
+   labs(x = "Round", y = "Finishing Position", title = "2024 Ferrari Race Results")
+resultsferrari_2024plot
+
+#saving plot
+ggsave(resultsferrari_2024plot,
+       file = "C:/Notre Dame/Fall Semester/Sports Analytics/Assignment1/resultsferrari_2024plot.jpeg",
+       dpi = 600)
+
+###Williams
+resultswilliams_2024 <- results_2024 %>%
+  filter(constructor_id == "williams") #Filtering for the constructor Williams
+
+resultswilliams_2024plot <- ggplot(resultswilliams_2024, aes(x = round, y = position, colour = driver_id)) +
+   geom_line() + #Plotting finishing results for Williams
+   theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white"))+
+   labs(x = "Round", y = "Finishing Position", title = "2024 Williams Race Results")
+resultswilliams_2024plot
+
+#Saving plot
+ggsave(resultswilliams_2024plot,
+       file = "C:/Notre Dame/Fall Semester/Sports Analytics/Assignment1/resultswilliams_2024plot.jpeg",
+       dpi = 600)
+```
+
+## F1 Lap Data
+```{r}
+#2024 Race lap times 
+laps1_2024 <- load_session_laps(season = 2024, round = 1, session = "R")
+laps1_2024
+
+laps2_2024 <- load_session_laps(season = 2024, round = 2, session = "R")
+laps2_2024
+
+laps3_2024 <- load_session_laps(season = 2024, round = 3, session = "R")
+laps3_2024
+
+laps4_2024 <- load_session_laps(season = 2024, round = 4, session = "R")
+laps4_2024
+
+laps5_2024 <- load_session_laps(season = 2024, round = 5, session = "R")
+laps5_2024
+
+laps6_2024 <- load_session_laps(season = 2024, round = 6, session = "R")
+laps6_2024
+
+laps7_2024 <- load_session_laps(season = 2024, round = 7, session = "R")
+laps7_2024
+
+laps8_2024 <- load_session_laps(season = 2024, round = 8, session = "R")
+laps8_2024
+
+laps9_2024 <- load_session_laps(season = 2024, round = 9, session = "R")
+laps9_2024
+
+laps10_2024 <- load_session_laps(season = 2024, round = 10, session = "R")
+laps10_2024
+
+laps11_2024 <- load_session_laps(season = 2024, round = 11, session = "R")
+laps11_2024
+
+laps12_2024 <- load_session_laps(season = 2024, round = 12, session = "R")
+laps12_2024
+
+laps13_2024 <- load_session_laps(season = 2024, round = 13, session = "R")
+laps13_2024
+
+laps14_2024 <- load_session_laps(season = 2024, round = 14, session = "R")
+laps14_2024
+
+laps15_2024 <- load_session_laps(season = 2024, round = 15, session = "R")
+laps15_2024
+
+laps16_2024 <- load_session_laps(season = 2024, round = 16, session = "R")
+laps16_2024
+
+laps17_2024 <- load_session_laps(season = 2024, round = 17, session = "R")
+laps17_2024
+
+laps18_2024 <- load_session_laps(season = 2024, round = 18, session = "R")
+laps18_2024
+
+laps19_2024 <- load_session_laps(season = 2024, round = 19, session = "R")
+laps19_2024
+
+laps20_2024 <- load_session_laps(season = 2024, round = 20, session = "R")
+laps20_2024
+
+laps21_2024 <- load_session_laps(season = 2024, round = 21, session = "R")
+laps21_2024
+```
+
+## Lap Times for Red Bull, Ferrari and Williams Drivers
+```{r}
+#Asking R to pick three random numbers without replacement. Asking R to do this to randomly select the races/rounds we should look at it. Why? Certain drivers perform at better tracks than others. Randomly selecting the race/round/track helps perform more objective analysis
+set.seed(48)
+sample(1:21, 3, replace = F)
+
+#The rounds selected were:
+  #5 - China
+  #10 - Spain
+  #19 - United States/COTA
+#Those are the rounds we will utilize for the analysis
+
+#Round 5 Lap time Times for Red Bull, Ferrari and Williams. Also creating a new variable for relative lap time
+laps5_2024rb <- laps5_2024 %>%
+  filter(team == "Red Bull Racing") #Red Bull
+laps5_2024rb$baselap <- 100 #Base laptime variable
+laps5_2024rb$timedif <- (laps5_2024rb$lap_time - laps5_2024rb$baselap) #Time differential variable
+
+laps5_2024fer <- laps5_2024 %>%
+  filter(team == "Ferrari") #Ferrari
+laps5_2024fer$baselap <- 100 #Base laptime variable
+laps5_2024fer$timedif <- (laps5_2024fer$lap_time - laps5_2024fer$baselap) #Time differential variable
+
+laps5_2024Wil <- laps5_2024 %>%
+  filter(team == "Williams") #Williams
+laps5_2024Wil$baselap <- 100 #Base laptime variable
+laps5_2024Wil$timedif <- (laps5_2024Wil$lap_time - laps5_2024Wil$baselap) #Time differential variable
+
+#Round 10 Lap time Times for Red Bull, Ferrari and Williams
+laps10_2024rb <- laps10_2024 %>%
+  filter(team == "Red Bull Racing") #Red Bull
+laps10_2024rb$baselap <- 80 #Base laptime variable
+laps10_2024rb$timedif <- (laps10_2024rb$lap_time - laps10_2024rb$baselap) #Time differential variable
+
+laps10_2024fer <- laps10_2024 %>%
+  filter(team == "Ferrari") #Ferrari
+laps10_2024fer$baselap <- 80 #Base laptime variable
+laps10_2024fer$timedif <- (laps10_2024fer$lap_time - laps10_2024fer$baselap) #Time differential variable
+
+laps10_2024Wil <- laps10_2024 %>%
+  filter(team == "Williams") #Williams
+laps10_2024Wil$baselap <- 80 #Base laptime variable
+laps10_2024Wil$timedif <- (laps10_2024Wil$lap_time - laps10_2024Wil$baselap) #Time differential variable
+
+#Round 19 Lap time Times for Red Bull, Ferrari and Williams
+laps19_2024rb <- laps19_2024 %>%
+  filter(team == "Red Bull Racing") #Red Bull
+laps19_2024rb$baselap <- 100 #Base laptime variable
+laps19_2024rb$timedif <- (laps19_2024rb$lap_time - laps19_2024rb$baselap) #Time differential variable
+
+laps19_2024fer <- laps19_2024 %>%
+  filter(team == "Ferrari") #Ferrari
+laps19_2024fer$baselap <- 100 #Base laptime variable
+laps19_2024fer$timedif <- (laps19_2024fer$lap_time - laps19_2024fer$baselap) #Time differential variable
+
+laps19_2024Wil <- laps19_2024 %>%
+  filter(team == "Williams") #Williams
+laps19_2024Wil$baselap <- 100 #Base laptime variable
+laps19_2024Wil$timedif <- (laps19_2024Wil$lap_time - laps19_2024Wil$baselap) #Time differential variable
+
+#Creating laptime visualizations for Round 5 - Red Bull
+ggplot(laps5_2024rb, aes(x = lap_number, y = timedif, colour = driver)) +
+  geom_line() +
+  theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white")) +
+   labs(x = "Lap Number", y = "Lap Time (Relative to 100 sec)", title = "Round 5 Lap Times - Red Bull") +
+  scale_y_continuous(name="Lap Time (Relative to 100 sec)", limits=c(-4, 4)) +
+  geom_hline(yintercept = 0, color = "white")
+
+#Creating laptime visualizations for Round 5 - Ferrari
+ggplot(laps5_2024fer, aes(x = lap_number, y = timedif, colour = driver)) +
+  geom_line() +
+  theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white")) +
+   labs(x = "Lap Number", y = "Lap Time (Relative to 100 sec)", title = "Round 5 Lap Times - Ferrari") +
+  scale_y_continuous(name="Lap Time (Relative to 100 sec)", limits=c(-4, 4)) +
+  geom_hline(yintercept = 0, color = "white")
+
+#Creating laptime visualizations for Round 5 - Williams
+ggplot(laps5_2024Wil, aes(x = lap_number, y = timedif, colour = driver)) +
+  geom_line() +
+  theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white")) +
+   labs(x = "Lap Number", y = "Lap Time (Relative to 100 sec)", title = "Round 5 Lap Times - Williams") +
+  scale_y_continuous(name="Lap Time (Relative to 100 sec)", limits=c(-4, 4)) +
+  geom_hline(yintercept = 0, color = "white")
+
+#Creating laptime visualizations for Round 10 - Red Bull
+ggplot(laps10_2024rb, aes(x = lap_number, y = timedif, colour = driver)) +
+  geom_line() +
+  theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white")) +
+   labs(x = "Lap Number", y = "Lap Time (Relative to 80 sec)", title = "Round 10 Lap Times - Red Bull") +
+  scale_y_continuous(name="Lap Time (Relative to 80 sec)", limits=c(-4, 4)) +
+  geom_hline(yintercept = 0, color = "white")
+
+#Creating laptime visualizations for Round 10 - Ferrari
+ggplot(laps10_2024fer, aes(x = lap_number, y = timedif, colour = driver)) +
+  geom_line() +
+  theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white")) +
+   labs(x = "Lap Number", y = "Lap Time (Relative to 80 sec)", title = "Round 10 Lap Times - Ferrari") +
+  scale_y_continuous(name="Lap Time (Relative to 80 sec)", limits=c(-4, 4)) +
+  geom_hline(yintercept = 0, color = "white")
+
+#Creating laptime visualizations for Round 10 - Williams
+ggplot(laps10_2024Wil, aes(x = lap_number, y = timedif, colour = driver)) +
+  geom_line() +
+  theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white")) +
+   labs(x = "Lap Number", y = "Lap Time (Relative to 80 sec)", title = "Round 10 Lap Times - Williams") +
+  scale_y_continuous(name="Lap Time (Relative to 80 sec)", limits=c(-4, 4)) +
+  geom_hline(yintercept = 0, color = "white")
+
+#Creating laptime visualizations for Round 19 - Red Bull
+round19lapsrb_2024plot <- ggplot(laps19_2024rb, aes(x = lap_number, y = timedif, colour = driver)) +
+  geom_line() +
+  theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white")) +
+   labs(x = "Lap Number", y = "Lap Time (Relative to 100 sec)", title = "Round 19 Lap Times - Red Bull") +
+  scale_y_continuous(name="Lap Time (Relative to 100 sec)", limits=c(-4, 4)) +
+  geom_hline(yintercept = 0, color = "white")
+
+  #Saving plot
+  ggsave(round19lapsrb_2024plot,
+       file = "C:/Notre Dame/Fall Semester/Sports Analytics/Assignment1/round19lapsrb_2024plot.jpeg",
+       dpi = 600)
+
+#Creating laptime visualizations for Round 19 - Ferrari
+round19lapsfer_2024plot <- ggplot(laps19_2024fer, aes(x = lap_number, y = timedif, colour = driver)) +
+  geom_line() +
+  theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white")) +
+   labs(x = "Lap Number", y = "Lap Time (Relative to 100 sec)", title = "Round 19 Lap Times - Ferrari") +
+  scale_y_continuous(name="Lap Time (Relative to 100 sec)", limits=c(-4, 4)) +
+  geom_hline(yintercept = 0, color = "white")
+
+  #Saving plot
+  ggsave(round19lapsfer_2024plot,
+       file = "C:/Notre Dame/Fall Semester/Sports Analytics/Assignment1/round19lapsfer_2024plot.jpeg",
+       dpi = 600)
+
+#Creating laptime visualizations for Round 19 - Williams
+round19lapsWil_2024plot <- ggplot(laps19_2024Wil, aes(x = lap_number, y = timedif, colour = driver)) +
+  geom_line() +
+  theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white")) +
+   labs(x = "Lap Number", y = "Lap Time (Relative to 100 sec)", title = "Round 19 Lap Times - Williams") +
+  scale_y_continuous(name="Lap Time (Relative to 100 sec)", limits=c(-4, 4)) +
+  geom_hline(yintercept = 0, color = "white")
+
+  #Saving plot
+  ggsave(round19lapsWil_2024plot,
+       file = "C:/Notre Dame/Fall Semester/Sports Analytics/Assignment1/round19lapsWil_2024plot.jpeg",
+       dpi = 600)
+```
+
+## Fastest Lap Plotting for Red Bull, Ferrari and Williams Drivers
+```{r}
+#Asking R to pick three random numbers without replacement. Asking R to do this to randomly select the races/rounds we should look at it. Why? Certain drivers perform at better tracks than others. Randomly selecting the race/round/track helps perform more objective analysis
+set.seed(7)
+sample(1:21, 3, replace = F)
+
+#The rounds selected were:
+  #7 - Imola
+  #10 - Spain
+  #19 - United States/COTA
+#Those are the rounds we will utilize for the analysis
+
+#Imola fastest lap plots
+  
+  #Verstappen
+  Verstappen7_plot <- plot_fastest(season = 2024, round = 7, session = "R", driver = "VER",   color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Perez
+  Perez7_plot <- plot_fastest(season = 2024, round = 7, session = "R", driver =  "PER",       color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Leclerc
+  Leclerc7_plot <- plot_fastest(season = 2024, round = 7, session = "R", driver =  "LEC",     color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Sainz
+  Sainz7_plot <- plot_fastest(season = 2024, round = 7, session = "R", driver =  "Sainz",     color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Albon
+  Albon7_plot <- plot_fastest(season = 2024, round = 7, session = "R", driver =  "Albon",     color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  Albon7_plot
+  
+  #Sargeant
+  Sargeant7_plot <- plot_fastest(season = 2024, round = 7, session = "R", driver =   "Sargeant",     color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+#Spain fastest lap plots
+  
+  #Verstappen
+  Verstappen10_plot <- plot_fastest(season = 2024, round = 10, session = "R", driver = "VER",   color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Perez
+  Perez10_plot <- plot_fastest(season = 2024, round = 10, session = "R", driver =  "PER",       color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Leclerc
+  Leclerc10_plot <- plot_fastest(season = 2024, round = 10, session = "R", driver =  "LEC",     color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Sainz
+  Sainz10_plot <- plot_fastest(season = 2024, round = 10, session = "R", driver =  "Sainz",     color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Albon
+  Albon10_plot <- plot_fastest(season = 2024, round = 10, session = "R", driver =  "Albon",     color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Sargeant
+  Sargeant10_plot <- plot_fastest(season = 2024, round = 10, session = "R", driver =   "Sargeant",     color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+#COTA fastest lap plots
+  
+  #Verstappen
+  Verstappen19_plot <- plot_fastest(season = 2024, round = 19, session = "R", driver = "VER",   color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Perez
+  Perez19_plot <- plot_fastest(season = 2024, round = 19, session = "R", driver =  "PER",       color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Leclerc
+  Leclerc19_plot <- plot_fastest(season = 2024, round = 19, session = "R", driver =  "LEC",     color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Sainz
+  Sainz19_plot <- plot_fastest(season = 2024, round = 19, session = "R", driver =  "Sainz",     color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Albon
+  Albon19_plot <- plot_fastest(season = 2024, round = 19, session = "R", driver =  "Albon",     color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Saving plot
+  ggsave(Albon19_plot,
+       file = "C:/Notre Dame/Fall Semester/Sports Analytics/Assignment1/Albon19_plot.jpeg",
+       dpi = 600)
+  
+  #Colapinto
+  Colapinto19_plot <- plot_fastest(season = 2024, round = 19, session = "R", driver =   "Colapinto",     color = "speed") + 
+  theme_dark_f1() + 
+  scale_colour_gradient(low = "navy", high = "red")
+  
+  #Saving plot
+  ggsave(Colapinto19_plot,
+       file = "C:/Notre Dame/Fall Semester/Sports Analytics/Assignment1/Colapinto19_plot.jpeg",
+       dpi = 600)
+```
+
+## F1 Team Rankings by Lap Time
+```{r}
+#Creating a data frame that pulls the constructors avg. fastest lap throughout the 2024 season
+results2_2024 <- results_2024 %>%
+  aggregate(time_sec ~ constructor_id+round, FUN = mean)
+
+#Creating a column showing time differantial relative to Red Bull
+dev <- rep(NA, nrow = nrow(results2_2024))
+
+for(i in 1:max(unique(results2_2024$round))){
+  dev[which(results2_2024$round == i)] <- results2_2024$time_sec[which(results2_2024$round == i)]-results2_2024$time_sec[which(results2_2024$round == i & results2_2024$constructor_id == "red_bull")]
+}
+
+results2_2024$time_diff <- dev
+  
+
+#Visualizing the constructors avg. fastest lap
+results3_2024 <- results2_2024 %>%
+  filter(constructor_id == "red_bull" | constructor_id == "ferrari" | constructor_id == "mclaren" | constructor_id == "williams")
+
+ggplot(results3_2024, aes(x = round, y = time_diff, colour = constructor_id)) + 
+  geom_line() +
+  theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white")) +
+   labs(x = "Round", y = "Lap Time", title = "Avg Fastest lap Time Differential to Red Bull") +
+  scale_y_continuous(name="Time Differential to Red Bull", limits=c(-2, 2))
+```
+
+## Summarize for res (rda)
+```{r}
+#Summarizing the data for laptimes. 
+temp <- unique(res[, c("driver", "round", "team")])
+
+avg_lap <- rep(NA, nrow(temp))
+
+for(i in 1:nrow(temp)){
+  avg_lap[i] <- mean(res$lap_time[which(res$driver == temp$driver[i] &
+                                          res$round == temp$round[i])], na.rm = TRUE)
+  
+  
+  
+}
+
+temp$avg_lap <- avg_lap
+
+temp_2 <- temp
+
+#Scaling the data in order for the laptimes to be on the same scale
+for(i in 1:max(temp_2$round)){
+  temp_2$avg_lap[which(temp_2$round == i)] <- scale(temp_2$avg_lap[which(temp_2$round == i)])
+}
+```
+
+#Visualizing drivers laptimes throughout 2024
+```{r}
+g_1 <- ggplot(temp_2, aes(x = factor(round), y = avg_lap, color = team))+
+  geom_boxplot() +
+  facet_wrap(~team)
+g_1
+
+avg_laps_2024 <- ggplot(temp_2, aes(x = factor(round), y = avg_lap, color = driver))+
+  geom_point() +
+  geom_text_repel(label = temp_2$driver) +
+  facet_wrap(~team) + 
+  theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white")) +
+  labs(x = "Round", y = "Avg_lap", title = "Drivers Avg Lap Times (Race) for 2024") 
+avg_laps_2024
+
+#Saving plot
+ggsave(avg_laps_2024,
+       file = "C:/Notre Dame/Fall Semester/Sports Analytics/Assignment1/avg_laps_2024.jpeg",
+       dpi = 1000)
+
+#Creating one massive plot
+avg2_laps_2024 <- ggplot(temp_2, aes(x = factor(round), y = avg_lap, color = driver))+
+  geom_point() +
+  geom_text_repel(label = temp_2$driver) +
+  theme(panel.background = element_rect(fill = "black"),
+         plot.background = element_rect(fill = "black"),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.title.x = element_text(color = "white"),
+         axis.title.y = element_text(color = "white"),
+         plot.title = element_text(color = "white"),
+         axis.text = element_text(color = "white")) +
+  labs(x = "Round", y = "Avg_lap", title = "Drivers Avg Lap Times (Race) for 2024") 
+avg2_laps_2024
+```
+
+##k-means clustering
+```{r}
+#Arranging the columns for clustering. Also removing nan values
+temp_2 <- temp_2 %>%
+  select(driver, avg_lap, team, round)
+
+temp_2 <- na.omit(temp_2)
+
+is.na(temp_2)
+temp_2_flat <- unlist(temp_2)
+is.nan(temp_2_flat)
+temp_2_inf <- unlist(temp_2)
+is.infinite(temp_2_inf)
+
+#Looking at the standings
+cur_constructor_stand <- load_standings(season = 2024, round = 21, type = "constructor")
+cur_constructor_stand
+
+#Replacing team names with numerical values based off the constructors standings. The best teams get higher numbers
+temp_2_mod <- temp_2
+
+temp_2_mod$team[temp_2_mod$team == "McLaren"] <- 10
+temp_2_mod$team[temp_2_mod$team == "Ferrari"] <- 9
+temp_2_mod$team[temp_2_mod$team == "Red Bull Racing"] <- 8
+temp_2_mod$team[temp_2_mod$team == "Mercedes"] <- 7
+temp_2_mod$team[temp_2_mod$team == "Aston Martin"] <- 6
+temp_2_mod$team[temp_2_mod$team == "Alpine"] <- 5
+temp_2_mod$team[temp_2_mod$team == "Haas F1 Team"] <- 4
+temp_2_mod$team[temp_2_mod$team == "RB"] <- 3
+temp_2_mod$team[temp_2_mod$team == "Williams"] <- 2
+temp_2_mod$team[temp_2_mod$team == "Kick Sauber"] <- 1
+  
+#Clustering for average lap
+set.seed(41)
+fit1 <- kmeans(x = temp_2_mod[,2:3],
+               centers = 3, 
+               nstart = 10,
+               iter.max = 10)
+
+#Extract clusters
+clusters_1 <- fit1$cluster
+
+# Check samples per cluster
+summary(as.factor(clusters_1))
+
+# Check teams in cluster 1
+cat("Cluster 1 Drivers:\n")
+temp_2_mod$driver[clusters_1 == 1]
+# Check teams in cluster 2
+cat("Cluster 2 Drivers:\n")
+temp_2_mod$driver[clusters_1 == 2]
+# Check teams in cluster 3
+cat("Cluster 3 Drivers:\n")
+temp_2_mod$driver[clusters_1 == 3]
+
+#####Drivers' by Cluster#####
+
+#Cluster 1 - Zho, Ric, Tsu, Alb, Bot, Sar, Col, Law
+
+#Cluster 2 - Ver, Per, Sai, Lec, Rus, Nor, Pia, Bea
+
+#Cluster 3 - Alo, Str, Mag, Hul, Oco, Gas, Bea
+
+```
+
+##Calculations
+```{r}
+#Because clustering did not reveal new information. We will try ELO Ratings to rank drivers
+
+#Creating a metric that will rate the car. The equation will be CR = [(avg_lap - fast_lap)/fast_lap]*100
+
+###Credit for equation idea: Zijian Xun###
+
+#Equation explained:
+  #CR = car rating
+  #avg_lap = teams avg. laptimes for a race
+  #fast_lap = fastest avg. laptimes amongst all drivers
+
+#The car rating (CR) will be multiplied with the ELO Rating to create the ranking system
+
+#Grabbing the overall fastest lap for each round
+fast_lap <- rep(NA, nrow(temp))
+
+for(i in 1:nrow(temp)){
+  fast_lap[i] <- min(temp$avg_lap[which(temp$round == temp$round[i])], na.rm = TRUE)
+}
+
+temp$fast_lap <- fast_lap
+
+#Grabbing the teams avg lap time for each round
+avg_teamlap <- rep(NA, nrow(temp))
+
+for(i in 1:nrow(temp)){
+  avg_teamlap[i] <- mean(temp$avg_lap[which(temp$team == temp$team[i] &
+                                             temp$round == temp$round[i])], na.rm = TRUE)
+}
+
+temp$avg_teamlap <- avg_teamlap
+
+#Grabbing the teams avg/overall cr (Car Rating)
+temp$cr <- ((temp$avg_teamlap-temp$fast_lap)/temp$fast_lap)*100
+
+avg_teamcr <- rep(NA, nrow(temp))
+
+for(i in 1:nrow(temp)){
+  avg_teamcr[i] <- mean(temp$cr[which(temp$team == temp$team[i])], na.rm = TRUE)
+}
+
+temp$avg_teamcr <- avg_teamcr
+
+#Creating a column for the time differential to the fastest lap
+time_delta <- rep(NA, nrow(temp))
+
+for(i in 1:nrow(temp)){
+time_delta[i] <- (temp$avg_lap[which(temp$round == temp$round[i] & temp$driver == temp$driver[i])]-temp$fast_lap[which(temp$round == temp$round[i])])
+}
+
+temp$time_delta <- time_delta
+
+
+#Creating a new dataframe with the only necessary columns
+temp_3 <- temp %>%
+  select(driver, round, avg_teamcr, time_delta)
+temp_3$elo <- 1500
+
+temp_3 <- na.omit(temp_3)
+
+```
+
+##ELO Ratings
+```{r}
+##CHAT USED
+
+# Function to calculate Elo rating change considering avg_teamcr
+calculate_elo <- function(elo_winner, elo_loser, avg_teamcr_winner, avg_teamcr_loser, K = 32) {
+  # Calculate expected scores considering both Elo and team strength (avg_teamcr)
+  E_winner <- 1 / (1 + 10^((elo_loser - elo_winner) / 400) * (avg_teamcr_loser / avg_teamcr_winner))
+  E_loser  <- 1 / (1 + 10^((elo_winner - elo_loser) / 400) * (avg_teamcr_winner / avg_teamcr_loser))
+  
+  # Calculate new ratings
+  new_elo_winner <- elo_winner + K * (1 - E_winner)
+  new_elo_loser  <- elo_loser + K * (0 - E_loser)
+  
+  return(c(new_elo_winner, new_elo_loser))
+}
+
+# Loop through all pairs of drivers in each round
+for (i in 1:nrow(temp_3)) {
+  for (j in 1:nrow(temp_3)) {
+    # Skip comparisons if time_delta or avg_teamcr is NA
+    if (i != j && !is.na(temp_3$time_delta[i]) && !is.na(temp_3$time_delta[j]) && !is.na(temp_3$avg_teamcr[i]) && !is.na(temp_3$avg_teamcr[j]) && temp_3$round[i] == temp_3$round[j]) {
+      if (temp_3$time_delta[i] < temp_3$time_delta[j]) {
+        # Driver i wins against Driver j
+        result <- calculate_elo(temp_3$elo[i], temp_3$elo[j], temp_3$avg_teamcr[i], temp_3$avg_teamcr[j])
+        temp_3$elo[i] <- result[1]
+        temp_3$elo[j] <- result[2]
+      } else if (temp_3$time_delta[i] > temp_3$time_delta[j]) {
+        # Driver j wins against Driver i
+        result <- calculate_elo(temp_3$elo[j], temp_3$elo[i], temp_3$avg_teamcr[j], temp_3$avg_teamcr[i])
+        temp_3$elo[i] <- result[2]
+        temp_3$elo[j] <- result[1]
+      }
+    }
+  }
+}
+
+#Average elo rating
+avg_elo <- rep(NA, nrow(temp_3))
+
+for(i in 1:nrow(temp_3)){
+  avg_elo[i] <- mean(temp_3$elo[which(temp_3$driver == temp_3$driver[i])], na.rm = TRUE)
+}
+
+temp_3$avg_elo <- avg_elo
+
+temp_3 <- arrange(temp_3, desc(avg_elo))
+
+write.csv(temp_3, "C:/Notre Dame/Fall Semester/Sports Analytics/Project/Project/elo_rating.csv")
+```
+
+
+
+
